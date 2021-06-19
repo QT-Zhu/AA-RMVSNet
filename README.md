@@ -3,10 +3,13 @@ Code for AA-RMVSNet: Adaptive Aggregation Recurrent Multi-view Stereo Network.
 
 ## Environment
 ```shell
-conda create -n AA-RMVSNet python=3.6
-conda install -c conda-forge nvidia-apex
+conda create -n drmvsnet python=3.6
+conda activate drmvsnet
+conda install pytorch==1.1.0 torchvision==0.3.0 cudatoolkit=10.0 -c pytorch
+conda install -c conda-forge nvidia-apex tensorboardx
 ```
 
 ## Citation
 
 ## Acknowledgements
+This repository is heavily based on [Xiaoyang Guo](https://github.com/xy-guo/MVSNet_pytorch)'s PyTorch implementation.
