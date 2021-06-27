@@ -1,11 +1,11 @@
 # AA-RMVSNet
 ## Description
 
-Code for [AA-RMVSNet: Adaptive Aggregation Recurrent Multi-view Stereo Network]().
+Code for AA-RMVSNet.
 
 ## Data Preparation
 
-
+The preprocessed [DTU training data](https://drive.google.com/file/d/1eDjh-_bxKKnEuz5h-HXS7EDJn59clx6V/view) and [Depth_raw](https://virutalbuy-public.oss-cn-hangzhou.aliyuncs.com/share/cascade-stereo/CasMVSNet/dtu_data/dtu_train_hr/Depths_raw.zip) can be downloaded from the original [MVSNet repo](https://github.com/YoYo000/MVSNet).
 
 ## How to run
 1. Install required dependencies:
@@ -27,9 +27,8 @@ Code for [AA-RMVSNet: Adaptive Aggregation Recurrent Multi-view Stereo Network](
    ./fusion.sh
    ```
 
+## Citation   
 
-
-### Citation   
 ```
 @article{YourName,
   title={Your Title},
@@ -38,12 +37,6 @@ Code for [AA-RMVSNet: Adaptive Aggregation Recurrent Multi-view Stereo Network](
   year={Year}
 }
 ```
-
-
-
-
-
-
 
 ## Acknowledgements
 This repository is heavily based on [Xiaoyang Guo](https://github.com/xy-guo/MVSNet_pytorch)'s PyTorch implementation.
