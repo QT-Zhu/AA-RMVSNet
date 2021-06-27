@@ -6,7 +6,7 @@ Code for [AA-RMVSNet: Adaptive Aggregation Recurrent Multi-view Stereo Network](
 conda create -n drmvsnet python=3.6
 conda activate drmvsnet
 conda install pytorch==1.1.0 torchvision==0.3.0 cudatoolkit=10.0 -c pytorch
-conda install -c conda-forge nvidia-apex tensorboardx
+conda install -c conda-forge py-opencv plyfile tensorboardx
 ```
 
 ## Citation
