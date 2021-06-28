@@ -35,7 +35,7 @@ parser.add_argument('--max_w', type=int, default=640, help='Maximum image width 
 parser.add_argument('--light_idx', type=int, default=3, help='select while in test')
 parser.add_argument('--view_num', type=int, default=3, help='training view num setting')
 
-parser.add_argument('--image_scale', type=float, default=0.25, help='pred depth map scale') # 0.5
+parser.add_argument('--image_scale', type=float, default=0.25, help='pred depth map scale')
 
 parser.add_argument('--dataset', default='dtu_yao', help='select dataset')
 parser.add_argument('--trainpath', help='train datapath')
@@ -49,7 +49,7 @@ parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
 
 parser.add_argument('--batch_size', type=int, default=12, help='train batch size')
 parser.add_argument('--numdepth', type=int, default=192, help='the number of depth values')
-parser.add_argument('--interval_scale', type=float, default=1.06, help='the number of depth values') # 1.01
+parser.add_argument('--interval_scale', type=float, default=1.06, help='the number of depth values')
 
 parser.add_argument('--loadckpt', default=None, help='load a specific checkpoint')
 parser.add_argument('--logdir', default='./checkpoints/debug', help='the directory to save checkpoints/logs')
@@ -220,7 +220,6 @@ def train_sample(sample, detailed_summary=False):
 
     prob_volume = outputs['prob_volume']
     loss, depth_est = model_loss(prob_volume, depth_gt, mask, depth_value)
-
 
     loss.backward()
     optimizer.step()

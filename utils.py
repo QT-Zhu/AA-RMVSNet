@@ -18,7 +18,6 @@ def make_nograd_func(func):
         with torch.no_grad():
             ret = func(*f_args, **f_kwargs)
         return ret
-
     return wrapper
 
 

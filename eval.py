@@ -24,7 +24,7 @@ parser.add_argument('--return_depth', help='True or False flag, input should be 
 
 parser.add_argument('--max_h', type=int, default=512, help='Maximum image height when training')
 parser.add_argument('--max_w', type=int, default=960, help='Maximum image width when training.')
-parser.add_argument('--image_scale', type=float, default=1.0, help='pred depth map scale') # 0.5
+parser.add_argument('--image_scale', type=float, default=1.0, help='pred depth map scale') 
 
 parser.add_argument('--light_idx', type=int, default=3, help='select while in test')
 parser.add_argument('--view_num', type=int, default=7, help='training view num setting')
@@ -66,12 +66,19 @@ def save_depth():
 
     # load checkpoint file specified by args.loadckpt
     print("loading model {}".format(args.loadckpt))
+
+    # Allow both keys xxx & module.xxx in dict
     state_dict = torch.load(args.loadckpt)
-    model.load_state_dict(state_dict['model'], False)
-
-    model = nn.DataParallel(model)
+    if "module.feature.conv0_0.0.weight" in state_dict['model']:
+        print("With module in keys")
+        model = nn.DataParallel(model)
+        model.load_state_dict(state_dict['model'],True)
+        
+    else:
+        print("No module in keys")
+        model.load_state_dict(state_dict['model'], True)
+        model = nn.DataParallel(model)
     model.cuda()
-
     model.eval()
     
     count = -1

@@ -29,7 +29,7 @@ class MVSDataset(Dataset):
         
         assert self.mode == "test"
         self.metas = self.build_list()
-        print('Data Loader : data_eval_transform **************' )
+        print('Data Loader : data_eval_transform_blend **************' )
 
     def build_list(self):
         metas = []
@@ -62,17 +62,12 @@ class MVSDataset(Dataset):
         extrinsics = np.fromstring(' '.join(lines[1:5]), dtype=np.float32, sep=' ').reshape((4, 4))
         # intrinsics: line [7-10), 3x3 matrix
         intrinsics = np.fromstring(' '.join(lines[7:10]), dtype=np.float32, sep=' ').reshape((3, 3))
-        # TODO Scale
-        #intrinsics[:2, :] /= 4
+
         # depth_min & depth_interval: line 11
         depth_min = float(lines[11].split()[0])
         depth_interval = float(lines[11].split()[1]) * self.interval_scale
         return intrinsics, extrinsics, depth_min, depth_interval
 
-    # def read_img(self, filename):
-    #     img = Image.open(filename)
-    #     np_img = np.array(img, dtype=np.float32) / 255.
-    #     return np_img
 
     def read_img(self, filename):
         img = Image.open(filename)

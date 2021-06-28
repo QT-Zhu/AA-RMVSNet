@@ -5,9 +5,9 @@ batch=2
 d=512
 interval_scale=0.5
 inverse_depth=True
-ckpt=./checkpoints/aa-rmvsnet_model.ckpt
+ckpt=./checkpoints/model_release.ckpt
 
-CUDA_VISIBLE_DEVICES=0 python -u eval.py \
+CUDA_VISIBLE_DEVICES=0 python eval.py \
         --dataset=data_eval_transform_large \
         --batch_size=${batch} \
         --inverse_depth=${inverse_depth} \

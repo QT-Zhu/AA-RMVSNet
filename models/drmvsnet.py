@@ -34,11 +34,13 @@ class FeatNet(nn.Module):
         conv1_2 = self.conv1_2(conv1_1)
 
         conv2_2 = self.conv2_2(self.conv2_1(conv1_1))
-        
-        #conv3_2 = self.conv3_2(self.conv3_1(conv0_2))
-        
-        m = nn.Upsample(scale_factor=2, mode='bilinear',align_corners=True)
-        conv = torch.cat([conv0_3, m(conv1_2), m(m(conv2_2))], 1)
+         
+        m1 = nn.functional.interpolate(conv1_2, scale_factor=2, mode='bilinear', align_corners=True)
+        m2_ = nn.functional.interpolate(conv2_2, scale_factor=2, mode='bilinear', align_corners=True)
+        m2 = nn.functional.interpolate(m2_, scale_factor=2, mode='bilinear', align_corners=True)
+        #m = nn.Upsample(scale_factor=2, mode='bilinear',align_corners=True)
+        #conv = torch.cat([conv0_3, m(conv1_2), m(m(conv2_2))], 1)
+        conv = torch.cat([conv0_3, m1, m2], 1)
         
         return conv
 

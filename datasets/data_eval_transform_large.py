@@ -29,7 +29,7 @@ class MVSDataset(Dataset):
         
         assert self.mode == "test"
         self.metas = self.build_list()
-        print('Data Loader : data_eval_transform **************' )
+        print('Data Loader : data_eval_transform_large **************' )
 
     def build_list(self):
         metas = []
@@ -70,10 +70,6 @@ class MVSDataset(Dataset):
         depth_end = float(lines[11].split()[3])
         return intrinsics, extrinsics, depth_min, depth_interval, depth_end
 
-    # def read_img(self, filename):
-    #     img = Image.open(filename)
-    #     np_img = np.array(img, dtype=np.float32) / 255.
-    #     return np_img
 
     def read_img(self, filename):
         img = Image.open(filename)

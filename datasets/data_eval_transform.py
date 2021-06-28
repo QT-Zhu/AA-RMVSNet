@@ -63,18 +63,11 @@ class MVSDataset(Dataset):
         # intrinsics: line [7-10), 3x3 matrix
         intrinsics = np.fromstring(' '.join(lines[7:10]), dtype=np.float32, sep=' ').reshape((3, 3))
 
-        
-        # TODO Scale
-        #intrinsics[:2, :] /= 4
         # depth_min & depth_interval: line 11
         depth_min = float(lines[11].split()[0])
         depth_interval = float(lines[11].split()[1]) * self.interval_scale
         return intrinsics, extrinsics, depth_min, depth_interval
 
-    # def read_img(self, filename):
-    #     img = Image.open(filename)
-    #     np_img = np.array(img, dtype=np.float32) / 255.
-    #     return np_img
 
     def read_img(self, filename):
         img = Image.open(filename)
@@ -111,8 +104,6 @@ class MVSDataset(Dataset):
         cams=[]
         extrinsics_list=[]
         
-        #geo_vis=np.load(os.path.join('/data/yhw/github_pytorch/Dense-Mutli-Hypothesis-RMVS/merged_dtu_depth/', '{}/geo_vis/{:0>8}_geo_vis.npy'.format(scan, ref_view)))
-        #geo_vis=geo_vis>0
 
         for i, vid in enumerate(view_ids):
             img_filename = os.path.join(self.datapath, '{}/images/{:0>8}.jpg'.format(scan, vid))
@@ -133,16 +124,11 @@ class MVSDataset(Dataset):
                     depth_values = depth_values.astype(np.float32)
                 else:
                     depth_values = np.arange(depth_min, depth_interval * self.ndepths + depth_min, depth_interval ,
-                                            dtype=np.float32) # the set is [)
-                                            
-                    #depth_values = np.concatenate((depth_values,depth_values[::-1]),axis=0)
+                                            dtype=np.float32) 
                                                                            
                     depth_end = depth_interval * self.ndepths + depth_min
-                # depth_values = np.arange(depth_min, depth_interval * (self.ndepths - 0.5) + depth_min, depth_interval,
-                #                          dtype=np.float32)
 
         imgs = np.stack(imgs).transpose([0, 3, 1, 2]) # B,C,H,W
-        #proj_matrices = np.stack(proj_matrices)
         
         ##TO DO determine a proper scale to resize input
         resize_scale = 1
@@ -185,4 +171,4 @@ class MVSDataset(Dataset):
         return {"imgs": croped_imgs,
                 "proj_matrices": new_proj_matrices,
                 "depth_values": depth_values,
-                "filename": scan + '/{}/' + '{:0>8}'.format(view_ids[0]) + "{}"}#, "geo_vis": geo_vis }
+                "filename": scan + '/{}/' + '{:0>8}'.format(view_ids[0]) + "{}"}
