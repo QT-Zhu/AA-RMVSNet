@@ -2,7 +2,7 @@
 ## Description
 
 Code for AA-RMVSNet.
-<img src="doc/architecture.png", width="800">
+<img src="doc/architecture.png" width="800">
 
 ## Data Preparation
 - Download the preprocessed [DTU training data](https://drive.google.com/file/d/1eDjh-_bxKKnEuz5h-HXS7EDJn59clx6V/view) (also available at [Baiduyun](https://pan.baidu.com/s/1Wb9E6BWCJu4wZfwxm_t4TQ#list/path=%2F), PW: s2v2).
