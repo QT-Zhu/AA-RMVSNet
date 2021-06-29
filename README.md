@@ -34,7 +34,7 @@ Code for AA-RMVSNet.
    ./scripts/fusion.sh
    ```
 
-
+Note: if permission issues are encountered, try `chmod +x filename` to allow execution.
 
 ## Citation   
 
