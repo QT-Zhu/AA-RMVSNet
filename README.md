@@ -1,11 +1,11 @@
 # AA-RMVSNet
-Implementation of AA-RMVSNet in PyTorch.
+Code for [AA-RMVSNet: Adaptive Aggregation Recurrent Multi-view Stereo Network]() in PyTorch.
 <img src="doc/architecture.png" width="800">
 
 ## Data Preparation
-- Download the preprocessed [DTU training data](https://drive.google.com/file/d/1eDjh-_bxKKnEuz5h-HXS7EDJn59clx6V/view) (also available at [Baiduyun](https://pan.baidu.com/s/1Wb9E6BWCJu4wZfwxm_t4TQ#list/path=%2F), PW: s2v2).
+- Download the preprocessed [DTU training data](https://drive.google.com/file/d/1eDjh-_bxKKnEuz5h-HXS7EDJn59clx6V/view) (also available at [BaiduYun](https://pan.baidu.com/s/1Wb9E6BWCJu4wZfwxm_t4TQ#list/path=%2F), PW: s2v2).
 - For other datasets, please follow the practice in [Yao Yao's MVSNet repo](https://github.com/YoYo000/MVSNet).
-- The [pretrained model]() is provided. Place it under `./checkpoints/`.
+- The [pretrained model](https://drive.google.com/file/d/1vlfQqhvCA_lI3dRvmavQeDX19uxbTmZp/view?usp=sharing) is provided. Place it under `./checkpoints/`.
 
 
 ## How to run
