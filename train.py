@@ -19,7 +19,7 @@ from datasets.data_io import *
 
 cudnn.benchmark = True
 
-parser = argparse.ArgumentParser(description='A Official PyTorch Codebase of PVA-MVSNet')
+parser = argparse.ArgumentParser(description='PyTorch Codebase for AA-RMVSNet')
 parser.add_argument('--mode', default='train', help='train, val or test')
 
 parser.add_argument('--inverse_depth', help='True or False flag, input should be either "True" or "False".',
@@ -110,7 +110,7 @@ TestImgLoader = DataLoader(test_dataset, args.batch_size, shuffle=False, num_wor
 
 
 print('model: AA-RMVSNet')
-model = DrMVSNet(image_scale=args.image_scale, max_h=args.max_h, max_w=args.max_w)
+model = AARMVSNet(image_scale=args.image_scale, max_h=args.max_h, max_w=args.max_w)
 model = model.cuda()
 model = nn.parallel.DataParallel(model)
 

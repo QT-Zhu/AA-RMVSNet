@@ -24,7 +24,7 @@ parser.add_argument('--return_depth', help='True or False flag, input should be 
 
 parser.add_argument('--max_h', type=int, default=512, help='Maximum image height when training')
 parser.add_argument('--max_w', type=int, default=960, help='Maximum image width when training.')
-parser.add_argument('--image_scale', type=float, default=1.0, help='pred depth map scale') 
+parser.add_argument('--image_scale', type=float, default=1.0, help='pred depth map scale (compared to input image)') 
 
 parser.add_argument('--light_idx', type=int, default=3, help='select while in test')
 parser.add_argument('--view_num', type=int, default=7, help='training view num setting')
@@ -60,7 +60,7 @@ def save_depth():
 
     TestImgLoader = DataLoader(test_dataset, args.batch_size, shuffle=False, num_workers=4, drop_last=False)
 
-    model = DrMVSNet(image_scale=args.image_scale, 
+    model = AARMVSNet(image_scale=args.image_scale, 
             max_h=args.max_h, max_w=args.max_w, return_depth=args.return_depth)
 
 

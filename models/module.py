@@ -35,8 +35,6 @@ def homo_warping_depthwise(src_fea, src_proj, ref_proj, depth_value):
         
     warped_src_fea = F.grid_sample(src_fea, grid.view(batch, 1 * height, width, 2), mode='bilinear',
                                    padding_mode='zeros').type(torch.float32)
-    #warped_src_fea = warped_src_fea.view(batch, channels, height, width) # B, C, H, W
-    #warped_src_fea = warped_src_fea.type(torch.float32)
     return warped_src_fea
 
 class ConvLSTMCell(nn.Module):
@@ -268,14 +266,6 @@ class ResnetBlockGn(nn.Module):
 def resnet_block_gn(in_channels,  kernel_size=3, dilation=[1,1], bias=True, group_channel=8):
     return ResnetBlockGn(in_channels, kernel_size, dilation, bias=bias, group_channel=group_channel)
 
-def gatenet(gn=True, in_channels=32, bias=True):
-    return nn.Sequential(
-        convgnrelu(in_channels, 4, kernel_size=3, stride=1, dilation=1, bias=bias), # 4: 10G,8.6G; 
-        resnet_block_gn(4, kernel_size=1),
-        nn.Conv2d(4, 1, kernel_size=1, padding=0),
-        nn.Sigmoid()
-    )
-
 class deConvGnReLU(nn.Module):
     def __init__(self,
             in_channels,
@@ -295,3 +285,4 @@ class deConvGnReLU(nn.Module):
 
     def forward(self, x):
         return F.relu(self.gn(self.conv(x)), inplace=True)
+

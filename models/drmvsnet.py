@@ -3,51 +3,64 @@ import torch.nn as nn
 import torch.nn.functional as F
 from .module import *
 
+class IntraViewAAModule(nn.Module):
+    def __init__(self):
+        super(IntraViewAAModule,self).__init__()
+        base_filter = 8
+        self.deformconv0 = deformconvgnrelu(base_filter * 2, base_filter * 2, kernel_size=3, stride=1, dilation=1)
+        self.deformconv1 = deformconvgnrelu(base_filter * 2, base_filter * 1, kernel_size=3, stride=1, dilation=1)
+        self.deformconv2 = deformconvgnrelu(base_filter * 2, base_filter * 1, kernel_size=3, stride=1, dilation=1)
+    
+    def forward(self, x0, x1, x2):
+        m0 = self.deformconv0(x0)
+        x1_ = self.deformconv1(x1)
+        x2_ = self.deformconv2(x2)
+        m1 = nn.functional.interpolate(x1_, scale_factor=2, mode='bilinear', align_corners=True)
+        #m2 = nn.functional.interpolate(x2_, scale_factor=2, mode='bilinear', align_corners=True)
+        #m2 = nn.functional.interpolate(m2, scale_factor=2, mode='bilinear', align_corners=True)
+        m2 = nn.functional.interpolate(x2_, scale_factor=4, mode='bilinear', align_corners=True)
+        return torch.cat([m0, m1, m2], 1)
+
+class InterViewAAModule(nn.Module):
+    def __init__(self,in_channels=32, bias=True):
+        super(InterViewAAModule, self).__init__()
+        self.reweight_network = nn.Sequential(
+                                    convgnrelu(in_channels, 4, kernel_size=3, stride=1, dilation=1, bias=bias),
+                                    resnet_block_gn(4, kernel_size=1),
+                                    nn.Conv2d(4, 1, kernel_size=1, padding=0),
+                                    nn.Sigmoid()
+                                )
+    
+    def forward(self, x):
+        return self.reweight_network(x)
+
 class FeatNet(nn.Module):
-    def __init__(self, gn=True):
+    def __init__(self):
         super(FeatNet, self).__init__()
         base_filter = 8
 
-        self.conv0_0 = convgnrelu(3, base_filter , kernel_size=3, stride=1, dilation=1)
-        self.conv0_1 = convgnrelu(base_filter, base_filter * 2, kernel_size=3, stride=1, dilation=1)
-        self.conv0_2 = convgnrelu(base_filter * 2, base_filter * 2, kernel_size=3, stride=1, dilation=1)
-        self.conv0_3 = deformconvgnrelu(base_filter * 2, base_filter * 2, kernel_size=3, stride=1, dilation=1)
-
-        # conv1_2 with conv0_2
-        self.conv1_1 = convgnrelu(base_filter * 2, base_filter * 2, kernel_size=3, stride=2, dilation=1)
-        self.conv1_2 = deformconvgnrelu(base_filter * 2, base_filter * 1, kernel_size=3, stride=1, dilation=1)
-
-        # conv2_2 with conv0_2
-        self.conv2_1 = convgnrelu(base_filter * 2, base_filter * 2, kernel_size=3, stride=2, dilation=1)
-        self.conv2_2 = deformconvgnrelu(base_filter * 2, base_filter * 1, kernel_size=3, stride=1, dilation=1)
+        self.init_conv = nn.Sequential(
+            convgnrelu(3, base_filter , kernel_size=3, stride=1, dilation=1),
+            convgnrelu(base_filter, base_filter * 2, kernel_size=3, stride=1, dilation=1)
+            )
+        self.conv0 = convgnrelu(base_filter * 2, base_filter * 2, kernel_size=3, stride=1, dilation=1)
+        self.conv1 = convgnrelu(base_filter * 2, base_filter * 2, kernel_size=3, stride=2, dilation=1)
+        self.conv2 = convgnrelu(base_filter * 2, base_filter * 2, kernel_size=3, stride=2, dilation=1)
+        self.intraAA = IntraViewAAModule()
             
 
     def forward(self, x):
-        
-        conv0_0 = self.conv0_0(x)
-        conv0_1 = self.conv0_1(conv0_0)
-        conv0_2 = self.conv0_2(conv0_1)
-        conv0_3 = self.conv0_3(conv0_2)
-        
-        conv1_1 = self.conv1_1(conv0_2)
 
-        conv1_2 = self.conv1_2(conv1_1)
+        x = self.init_conv(x)
+        x0 = self.conv0(x)
+        x1 = self.conv1(x0)
+        x2 = self.conv2(x1)
 
-        conv2_2 = self.conv2_2(self.conv2_1(conv1_1))
-         
-        m1 = nn.functional.interpolate(conv1_2, scale_factor=2, mode='bilinear', align_corners=True)
-        m2_ = nn.functional.interpolate(conv2_2, scale_factor=2, mode='bilinear', align_corners=True)
-        m2 = nn.functional.interpolate(m2_, scale_factor=2, mode='bilinear', align_corners=True)
-        #m = nn.Upsample(scale_factor=2, mode='bilinear',align_corners=True)
-        #conv = torch.cat([conv0_3, m(conv1_2), m(m(conv2_2))], 1)
-        conv = torch.cat([conv0_3, m1, m2], 1)
-        
-        return conv
+        return self.intraAA(x0,x1,x2)
 
-# input 3D Feature Volume
-class UNetConvLSTM(nn.Module): # input 3D feature volume
+class UNetConvLSTM(nn.Module):
     def __init__(self, input_size, input_dim, hidden_dim, kernel_size, num_layers,
-                 batch_first=False, bias=True, return_all_layers=False, gn=True):
+                 bias=True):
         super(UNetConvLSTM, self).__init__()
 
         self._check_kernel_size_consistency(kernel_size)
@@ -59,15 +72,12 @@ class UNetConvLSTM(nn.Module): # input 3D feature volume
             raise ValueError('Inconsistent list length.')
 
         self.height, self.width = input_size #feature: height, width)
-        self.gn = gn
-        print('Training Phase in UNetConvLSTM: {}, {}, gn: {}'.format(self.height, self.width, self.gn))
+        print('Training Phase in UNetConvLSTM: {}, {}'.format(self.height, self.width))
         self.input_dim  = input_dim # input channel
         self.hidden_dim = hidden_dim # output channel [16, 16, 16, 16, 16, 8]
         self.kernel_size = kernel_size # kernel size  [[3, 3]*5]
         self.num_layers = num_layers # Unet layer size: must be odd
-        self.batch_first = batch_first # TRUE
-        self.bias = bias #
-        self.return_all_layers = return_all_layers
+        self.bias = bias
 
         cell_list = []
         self.down_num = (self.num_layers+1) / 2 
@@ -202,12 +212,11 @@ class UNetConvLSTM(nn.Module): # input 3D feature volume
             param = [param] * num_layers
         return param
 
-class DrMVSNet(nn.Module):
+class AARMVSNet(nn.Module):
     def __init__(self, image_scale=0.25, max_h=960, max_w=480, return_depth=False):
 
-        super(DrMVSNet,self).__init__()
-        self.gn = True
-        self.feature = FeatNet(gn=self.gn)
+        super(AARMVSNet,self).__init__()
+        self.feature = FeatNet()
         input_size = (int(max_h * image_scale), int(max_w * image_scale))  # height, width
 
         input_dim = [32, 16, 16, 32, 32]
@@ -216,8 +225,8 @@ class DrMVSNet(nn.Module):
         kernel_size = [(3, 3) for _ in range(num_layers)]
 
         self.cost_regularization = UNetConvLSTM(input_size, input_dim, hidden_dim, kernel_size, num_layers,
-                                                batch_first=False, bias=True, return_all_layers=False, gn=self.gn)
-        self.gatenet = gatenet(self.gn, 32)
+                                                bias=True)
+        self.omega = InterViewAAModule(32)
 
         self.return_depth = return_depth
 
@@ -245,7 +254,7 @@ class DrMVSNet(nn.Module):
                 for src_fea, src_proj in zip(src_features, src_projs):
                     warped_volume = homo_warping_depthwise(src_fea, src_proj, ref_proj, depth_values[:, d])
                     warped_volume = (warped_volume - ref_volume).pow_(2)
-                    reweight = self.gatenet(warped_volume)  
+                    reweight = self.omega(warped_volume)  
                     if warped_volumes is None:
                         warped_volumes = (reweight + 1) * warped_volume
                     else:
@@ -272,7 +281,7 @@ class DrMVSNet(nn.Module):
                 for src_fea, src_proj in zip(src_features, src_projs):
                     warped_volume = homo_warping_depthwise(src_fea, src_proj, ref_proj, depth_values[:, d])
                     warped_volume = (warped_volume - ref_volume).pow_(2)
-                    reweight = self.gatenet(warped_volume)  # saliency
+                    reweight = self.omega(warped_volume)  # saliency
 
                     if warped_volumes is None:
                         warped_volumes = (reweight + 1) * warped_volume
@@ -318,7 +327,7 @@ class DrMVSNet(nn.Module):
 
             return {"depth": depth_image, "photometric_confidence": conf}
 
-def mvsnet_cls_loss(prob_volume, depth_gt, mask, depth_value, return_prob_map=False): #depth_num, depth_start, depth_interval):
+def mvsnet_cls_loss(prob_volume, depth_gt, mask, depth_value, return_prob_map=False):
     # depth_value: B * NUM
     # get depth mask
     mask_true = mask 
@@ -353,11 +362,4 @@ def mvsnet_cls_loss(prob_volume, depth_gt, mask, depth_value, return_prob_map=Fa
         photometric_confidence = torch.max(prob_volume, dim=1)[0] # output shape dimension B * H * W
         return masked_cross_entropy, wta_depth_map, photometric_confidence
     return masked_cross_entropy, wta_depth_map
-
-
-
-
-
-
-
 
