@@ -32,7 +32,7 @@ Code for [AA-RMVSNet: Adaptive Aggregation Recurrent Multi-view Stereo Network](
    ./scripts/fusion_tnt.sh
    ```
 
-Note: if permission issues are encountered, try `chmod +x filename` to allow execution.
+Note: if permission issues are encountered, try `chmod +x <script_filename>` to allow execution.
 
 
 
