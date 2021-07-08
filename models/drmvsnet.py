@@ -16,8 +16,6 @@ class IntraViewAAModule(nn.Module):
         x1_ = self.deformconv1(x1)
         x2_ = self.deformconv2(x2)
         m1 = nn.functional.interpolate(x1_, scale_factor=2, mode='bilinear', align_corners=True)
-        #m2 = nn.functional.interpolate(x2_, scale_factor=2, mode='bilinear', align_corners=True)
-        #m2 = nn.functional.interpolate(m2, scale_factor=2, mode='bilinear', align_corners=True)
         m2 = nn.functional.interpolate(x2_, scale_factor=4, mode='bilinear', align_corners=True)
         return torch.cat([m0, m1, m2], 1)
 
