@@ -48,5 +48,5 @@ Note: if permission issues are encountered, try `chmod +x <script_filename>` to 
 ```
 
 ## Acknowledgements
-This repository is heavily based on [Xiaoyang Guo](https://github.com/xy-guo/MVSNet_pytorch)'s PyTorch implementation.
+This repository is heavily based on [Xiaoyang Guo's PyTorch implementation](https://github.com/xy-guo/MVSNet_pytorch).
 
