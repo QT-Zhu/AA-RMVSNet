@@ -43,11 +43,11 @@ Note: if permission issues are encountered, try `chmod +x <script_filename>` to 
 ## Citation   
 
 ```
-@article{wei2021aarmvsnet,
+@inproceedings{wei2021aa,
   title={AA-RMVSNet: Adaptive Aggregation Recurrent Multi-view Stereo Network},
   author={Wei, Zizhuang and Zhu, Qingtian and Min, Chen and Chen, Yisong and Wang, Guoping},
-  journal={Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
-  pages={6187-6196},
+  booktitle={Proceedings of the IEEE/CVF International Conference on Computer Vision},
+  pages={6187--6196},
   year={2021}
 }
 ```
