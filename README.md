@@ -1,8 +1,7 @@
 # AA-RMVSNet
-Code for AA-RMVSNet: Adaptive Aggregation Recurrent Multi-view Stereo Network (ICCV 2021) in PyTorch.
+Code for AA-RMVSNet: Adaptive Aggregation Recurrent Multi-view Stereo Network (ICCV 2021) in PyTorch. 
 
-- [arXiv link](https://arxiv.org/abs/2108.03824)
-- [CVF link](http://openaccess.thecvf.com/content/ICCV2021/html/Wei_AA-RMVSNet_Adaptive_Aggregation_Recurrent_Multi-View_Stereo_Network_ICCV_2021_paper.html)
+paper link: [arXiv](https://arxiv.org/abs/2108.03824) | [CVF](http://openaccess.thecvf.com/content/ICCV2021/html/Wei_AA-RMVSNet_Adaptive_Aggregation_Recurrent_Multi-View_Stereo_Network_ICCV_2021_paper.html)
 
 <img src="doc/arch.png" width="800">
 <img src="doc/tnt.png" width="800">
