@@ -7,14 +7,17 @@ class IntraViewAAModule(nn.Module):
     def __init__(self):
         super(IntraViewAAModule,self).__init__()
         base_filter = 8
-        self.deformconv0 = deformconvgnrelu(base_filter * 2, base_filter * 2, kernel_size=3, stride=1, dilation=1)
-        self.deformconv1 = deformconvgnrelu(base_filter * 2, base_filter * 1, kernel_size=3, stride=1, dilation=1)
-        self.deformconv2 = deformconvgnrelu(base_filter * 2, base_filter * 1, kernel_size=3, stride=1, dilation=1)
+        self.deformconv0 = deformconvgnrelu(base_filter * 4, base_filter * 4, kernel_size=3, stride=1, dilation=1)
+        self.conv0 = convgnrelu(base_filter * 4, base_filter * 2, kernel_size=1, stride=1, dilation=1)
+        self.deformconv1 = deformconvgnrelu(base_filter * 4, base_filter * 4, kernel_size=3, stride=1, dilation=1)
+        self.conv1 = convgnrelu(base_filter * 4, base_filter * 1, kernel_size=1, stride=1, dilation=1)
+        self.deformconv2 = deformconvgnrelu(base_filter * 4, base_filter * 4, kernel_size=3, stride=1, dilation=1)
+        self.conv2 = convgnrelu(base_filter * 4, base_filter * 1, kernel_size=1, stride=1, dilation=1)
     
     def forward(self, x0, x1, x2):
-        m0 = self.deformconv0(x0)
-        x1_ = self.deformconv1(x1)
-        x2_ = self.deformconv2(x2)
+        m0 = self.conv0(self.deformconv0(x0))
+        x1_ = self.conv1(self.deformconv1(x1))
+        x2_ = self.conv2(self.deformconv2(x2))
         m1 = nn.functional.interpolate(x1_, scale_factor=2, mode='bilinear', align_corners=True)
         m2 = nn.functional.interpolate(x2_, scale_factor=4, mode='bilinear', align_corners=True)
         return torch.cat([m0, m1, m2], 1)
@@ -41,9 +44,9 @@ class FeatNet(nn.Module):
             convgnrelu(3, base_filter , kernel_size=3, stride=1, dilation=1),
             convgnrelu(base_filter, base_filter * 2, kernel_size=3, stride=1, dilation=1)
             )
-        self.conv0 = convgnrelu(base_filter * 2, base_filter * 2, kernel_size=3, stride=1, dilation=1)
-        self.conv1 = convgnrelu(base_filter * 2, base_filter * 2, kernel_size=3, stride=2, dilation=1)
-        self.conv2 = convgnrelu(base_filter * 2, base_filter * 2, kernel_size=3, stride=2, dilation=1)
+        self.conv0 = convgnrelu(base_filter * 2, base_filter * 4, kernel_size=3, stride=1, dilation=1)
+        self.conv1 = convgnrelu(base_filter * 4, base_filter * 4, kernel_size=3, stride=2, dilation=1)
+        self.conv2 = convgnrelu(base_filter * 4, base_filter * 4, kernel_size=3, stride=2, dilation=1)
         self.intraAA = IntraViewAAModule()
             
 
@@ -289,41 +292,24 @@ class AARMVSNet(nn.Module):
                     volume_variance = warped_volumes / len(src_features)
 
                 cost_reg, hidden_state = self.cost_regularization(-1 * volume_variance, hidden_state, d)
-                cost_reg_list.append(cost_reg)
-                
-            
-            for d in range(num_depth):
-                prob = torch.exp(cost_reg_list[d].squeeze(1))
-                exp_sum=exp_sum + prob
-
-
-            prob_sum = torch.zeros(shape[0], shape[2], shape[3]).cuda()
-
-            
-            for d in range( num_depth ):
-            
-                prob = torch.exp(cost_reg_list[d].squeeze(1))
-            
-                prob = prob/exp_sum
-
+                prob = torch.exp(cost_reg.squeeze(1))
                 depth = depth_values[:, d]  # B
                 temp_depth_image = depth.view(shape[0], 1, 1).repeat(1, shape[2], shape[3])
                 update_flag_image = (max_prob_image < prob).type(torch.float)
-
                 new_max_prob_image = torch.mul(update_flag_image, prob) + torch.mul(1 - update_flag_image,
                                                                                     max_prob_image)
                 new_depth_image = torch.mul(update_flag_image, temp_depth_image) + torch.mul(1 - update_flag_image,
                                                                                              depth_image)
                 max_prob_image = new_max_prob_image
                 depth_image = new_depth_image
-                
-                prob_sum = prob_sum + prob 
+                exp_sum = exp_sum + prob
 
-            forward_exp_sum = prob_sum  # + 1e-7
+            forward_exp_sum = exp_sum  
+            forward_depth_map = depth_image
 
             conf = max_prob_image / forward_exp_sum
 
-            return {"depth": depth_image, "photometric_confidence": conf}
+            return {"depth": forward_depth_map, "photometric_confidence": conf}
 
 def mvsnet_cls_loss(prob_volume, depth_gt, mask, depth_value, return_prob_map=False):
     # depth_value: B * NUM

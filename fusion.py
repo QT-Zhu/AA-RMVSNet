@@ -143,6 +143,9 @@ def filter_depth(scan_folder, out_folder, plyfilename, photo_threshold):
 
     for ref_view, src_views in pair_data:
         # load the reference image
+        if not os.path.exists(os.path.join(out_folder, 'depth_est_0/{:0>8}.pfm'.format(ref_view))):
+            print("skip", ref_view)
+            continue
         ref_img = read_img(os.path.join(scan_folder, 'images/{:0>8}.jpg'.format(ref_view)))
         # load the estimated depth of the reference view
         ref_depth_est = read_pfm(os.path.join(out_folder, 'depth_est_0/{:0>8}.pfm'.format(ref_view)))[0]
@@ -279,8 +282,8 @@ if __name__ == '__main__':
         out_folder = os.path.join(args.outdir, scan)
         if (args.test_dataset=='dtu'):
             scan_id = int(scan[4:])
-            photo_threshold=0.3
+            photo_threshold=0.35 #Here
             filter_depth(scan_folder, out_folder, os.path.join(args.outdir, 'mvsnet_{:0>3}_l3.ply'.format(scan_id) ), photo_threshold)
         if (args.test_dataset=='tnt'):
-            photo_threshold=0.3
+            photo_threshold=0.2
             filter_depth(scan_folder, out_folder, os.path.join(args.outdir, scan + '.ply'), photo_threshold)

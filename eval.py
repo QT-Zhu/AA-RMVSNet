@@ -35,7 +35,7 @@ parser.add_argument('--testlist', help='testing scan list')
 
 parser.add_argument('--batch_size', type=int, default=1, help='testing batch size')
 parser.add_argument('--numdepth', type=int, default=256, help='the number of depth values')
-parser.add_argument('--interval_scale', type=float, default=0.8, help='the depth interval scale')
+parser.add_argument('--interval_scale', type=float, default=1.0, help='the depth interval scale')
 
 
 parser.add_argument('--loadckpt', default=None, help='load a specific checkpoint')

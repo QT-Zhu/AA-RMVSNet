@@ -2,7 +2,7 @@
 source env.sh
 
 testlist=./lists/tp_list_int.txt
-outdir=./outputs_tnt/checkpoints_model_release.ckpt
+outdir=./outputs_tnt/checkpoints_model_blended_v2.ckpt
 test_dataset=tnt
 python fusion_padding.py --testpath=$TP_TESTING \
                      --testlist=$testlist \

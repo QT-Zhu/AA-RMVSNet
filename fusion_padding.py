@@ -12,10 +12,10 @@ from PIL import Image
 parser = argparse.ArgumentParser(
     description='Predict depth, filter, and fuse. May be different from the original implementation')
 
-parser.add_argument('--testpath', default='/data/yhw/tanksAndtemple/', help='testing data path')
+parser.add_argument('--testpath', default='/data/zqt/tanksAndtemple/', help='testing data path')
 parser.add_argument('--testlist', default='./lists/tp_list.txt', help='testing scan list')
 
-parser.add_argument('--outdir', default='/data/yhw/github_pytorch/Dense-Mutli-Hypothesis-RMVS/outputs_tnt_20210426/0325_drmvs_g4_b1_d128_is1_mvsnet_cls_loss_ori_lr0.001_opAdam_ep10__shcosinedecay_FeatNet_AA_new_UNetConvLSTM_cg81_vn7_is0.25_gnTrue_v1.28_model_000007.ckpt/', help='output dir')
+parser.add_argument('--outdir', default='/xdata/zqt/', help='output dir')
 parser.add_argument('--display', action='store_true', help='display depth images and masks')
 parser.add_argument('--test_dataset', choices=['dtu','tnt'], help='which dataset to evaluate')
 
@@ -169,7 +169,7 @@ def filter_depth(scan_folder, out_folder, plyfilename):
         confidence = read_pfm(os.path.join(out_folder, 'confidence_0/{:0>8}.pfm'.format(ref_view)))[0]
         
         confidence = confidence[2:-2,:]
-        
+      
         photo_mask = confidence > 0.3
 
         all_srcview_depth_ests = []

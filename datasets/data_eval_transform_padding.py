@@ -45,8 +45,11 @@ class MVSDataset(Dataset):
                 num_viewpoint = int(f.readline())
                 # viewpoints (49)
                 for view_idx in range(num_viewpoint):
+                    
                     ref_view = int(f.readline().rstrip())
                     src_views = [int(x) for x in f.readline().rstrip().split()[1::2]]
+                    if len(src_views)==0:
+                        continue
                     metas.append((scan, ref_view, src_views))
         print("dataset", self.mode, "metas:", len(metas))
         return metas
@@ -100,7 +103,8 @@ class MVSDataset(Dataset):
               self.nviews=len(src_views)+1
         
         # use only the reference view and first nviews-1 source views
-        view_ids = [ref_view] + src_views[:self.nviews - 1]
+        #view_ids = [ref_view] + src_views[:self.nviews - 1]
+        view_ids = [ref_view] + src_views[:int((self.nviews-1)/2)] + src_views[len(src_views)-int(self.nviews/2):len(src_views)]
 
         imgs = []
         mask = None
@@ -158,13 +162,10 @@ class MVSDataset(Dataset):
                 resize_scale = w_scale
         
         imgs = imgs.transpose(0,2,3,1)
-        
         scaled_input_imgs, scaled_input_cams = scale_mvs_input(imgs, cams, scale=resize_scale, view_num=self.nviews)
-              
         #TO DO crop to fit network
         croped_imgs, croped_cams = crop_mvs_input(scaled_input_imgs, scaled_input_cams,view_num=self.nviews,
                     max_h=self.max_h,max_w=self.max_w,base_image_size=self.base_image_size)
-                    
         croped_imgs = croped_imgs.transpose(0,3,1,2)
 
 

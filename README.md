@@ -11,12 +11,13 @@ paper link: [arXiv](https://arxiv.org/abs/2108.03824) | [CVF](http://openaccess.
 - Jun 27, 2021: Update code
 - Aug 10, 2021: Update paper link
 - Oct 14, 2021: Update bibtex
+- May 23, 2022: Update network architecture & pretrained model
 
 
 ## Data Preparation
 - Download the preprocessed [DTU training data](https://drive.google.com/file/d/1eDjh-_bxKKnEuz5h-HXS7EDJn59clx6V/view) (also available at [BaiduYun](https://pan.baidu.com/s/1Wb9E6BWCJu4wZfwxm_t4TQ#list/path=%2F), PW: s2v2).
 - For other datasets, please follow the practice in [Yao Yao's MVSNet repo](https://github.com/YoYo000/MVSNet).
-- The [pretrained model](https://drive.google.com/file/d/1vlfQqhvCA_lI3dRvmavQeDX19uxbTmZp/view?usp=sharing) is provided. Place it under `./checkpoints/`.
+- Note that the newly released pretrained models are not compatible with the old codebase. Please update the code as well.
 
 
 ## How to run
@@ -42,7 +43,7 @@ paper link: [arXiv](https://arxiv.org/abs/2108.03824) | [CVF](http://openaccess.
    ./scripts/eval_tnt.sh
    ./scripts/fusion_tnt.sh
    ```
-Note: if permission issues are encountered, try `chmod +x <script_filename>` to allow execution.
+   Note: if permission issues are encountered, try `chmod +x <script_filename>` to allow execution.
 
 ## Citation   
 

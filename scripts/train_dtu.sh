@@ -3,8 +3,8 @@ source env.sh
 data=$(date +"%m%d")
 batch=2
 epochs=10
-d=150
-interval_scale=1.35 #make sure d * interval_scale = 203.52
+d=192
+interval_scale=1.06 #make sure d * interval_scale = 203.52
 lr=0.001
 inverse_depth=False
 image_scale=0.25
